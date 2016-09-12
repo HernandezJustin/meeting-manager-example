@@ -1,13 +1,24 @@
-<h1><a href="/meetings">All meetings</a></h1>
-<% @meetings.each do |meeting| %>
-  <h3><a href="/meetings/<%= meeting.id %>"><%= meeting.name %></a></h3>
-  <p>
-    Tags:
-    <% meeting.tags.each do |tag| %>
-      <a href="/meetings?tag=<%= tag.name %>"><%= tag.name %></a>  
-    <% end %>
-  </p>
-  <p>Address: <%= meeting.address %></p>
-  <p>Start time: <%= meeting.start_time %></p>
-  <p>End time: <%= meeting.end_time %></p>
-<% end %>
+<div ng-app="app">
+  <div ng-controller="meetingsCtrl" ng-init="setup()">
+    <h1><a href="/meetings">All meetings</a></h1>
+    <h3><%= link_to "Create a new meeting", "/meetings/new" %></h3>
+
+    <input type="text" ng-model="searchbar" list="meetings">
+    <datalist id="meetings">
+      <option ng-repeat="meeting in meetings">{{meeting.name}}</option>
+    </datalist>
+    <div>
+      <button ng-click="sortBy('name')">Order by name</button>
+    </div>
+
+    <div ng-repeat="meeting in meetings | filter: {name: searchbar} |orderBy:orderAttribute:descending">
+      <h3><a href="/meetings/{{meeting.id}}">{{meeting.name}}</a></h3>
+      <p>
+        Tags:<a href="/meetings?tag={{tag.name}}" ng-repeat="tag in meeting.tags">{{tag.name}}</a>
+      </p>
+      <p>Address: {{meeting.address}}</p>
+      <p>Start time: {{meeting.start_time.strftime('%Y-%m-%dT%H:%M')}}</p>
+      <p>End time: {{meeting.end_time.strftime('%Y-%m-%dT%H:%M')}}</p>
+    </div>
+  </div>
+</div>
